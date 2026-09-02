@@ -4,9 +4,7 @@ An experimental, unofficial Python/Flask replacement backend for preserved April
 Rec Room clients (`20230414`). Not affiliated with or endorsed by Rec Room Inc.
 Compatibility with other builds is not guaranteed.
 
-This distribution is **API-only**: no HTML website, admin panel, credits page, personal
-accounts, database, live domain, Photon IDs, tunnel credentials, or linked platform IDs.
-Opening `/` in a browser displays the JSON discovery document, not a website.
+
 
 ## Features
 
