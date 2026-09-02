@@ -1,0 +1,272 @@
+[
+  {
+    "ModificationGuid": "79090a4b-e191-4788-9210-88a7bdf6d828",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Luxury)",
+    "Tooltip": null,
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "204f84a2-6ee2-45e1-9168-87f43e893e32",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Wood)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "wultE5yRpkuJREeJw4prKg",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Dragon)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "HyL83wPtf06DG6nsHofoeA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Steampunk)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "juFHwn9UjEiGaWyNnoxbtA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Pumpkin)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "Pw1XcUfAck2tNh0fIAu8LA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Waves)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "4HJ3wRmSZUuhMRUTA67dpA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Professor)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "i3NgZvTwkUSMsXRpqCgSZA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Wonderland)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "BGhlN3FKGEy6w-vwc28V4A",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Beach)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "BwIscV_YnE6iG4brl389Hg",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Mystery)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "JtMeQRvo00yVwAliICTP0w",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Movie Magic)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "h4xKGsHcTUy3iH7PVFjb2w",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Host1)",
+    "Tooltip": null,
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "cUBvDvybvEu5eZDPn57ExQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Host2)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "VYF9NGZBgU6TOo9ayjgBEQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Green)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "WwtFcRluQkmnCI_qH75L_Q",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Orange)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "iRtlLKI-X0S9oYUWLenAKQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Purple)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "tvjYGeRdwEqnr9mf84WgcQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Red)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "Q7Tr_0DXAkOdr61UXiocow",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Yellow)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "c1VRbmDGHUS7KiSgwj5prQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Pink)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "MODdVYrjaEy-iy6quALNuA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (White)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "H91DVbHzR06oie8fLjdE1A",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Hidden Worlds)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "RPWXRfZwfUeC9PFlvcbmxw",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Carnival)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "j83FD3aSQ0OUcrp4QIIZsA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Gold)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "L12C6OfxB0y53bLXZQ4rFg",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Contest Stranded)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "xDSDJJX2w0ySwtiE6w6ghg",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Maker Pen Contest Folklore)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "_rlnwZWJrk2eiQi4f_FhWQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Premium)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "ht4zv6ZFi0yrohyBm39o6A",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Contest Summer Camp)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "TpaRhLqVc02Oyr769imtnQ",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Diamond Universe)",
+    "Tooltip": null,
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "Z_mBcmlIHUWE0ox9Dn_kHA",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Solstice)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  },
+  {
+    "ModificationGuid": "OcixCg4jbUyLb6DFSTjrPg",
+    "PrefabName": "[MakerPen]",
+    "FriendlyName": "Maker Pen (Rhythm And Rooms)",
+    "Tooltip": "",
+    "Rarity": 0,
+    "PlatformMask": -1,
+    "Favorited": false
+  }
+]

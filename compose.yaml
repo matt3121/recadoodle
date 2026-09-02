@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - recnet-data:/app/instance
+    ports:
+      - "127.0.0.1:5000:5000"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on: [backend]
+
+volumes:
+  recnet-data:
+
