@@ -6,6 +6,7 @@ from flask import Flask
 
 from .authentication import register_authentication_routes
 from .protocol import register_protocol_routes
+from .readiness import register_readiness_routes
 
 
 def register_routes(app: Flask) -> None:
@@ -13,3 +14,4 @@ def register_routes(app: Flask) -> None:
 
     register_authentication_routes(app)
     register_protocol_routes(app)
+    register_readiness_routes(app)

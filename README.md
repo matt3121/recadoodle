@@ -16,6 +16,7 @@ recadoodle discord - https://discord.gg/guazzTRvnk
 - Personal dorms, room discovery, room saves, circuit values and room thumbnails.
 - Avatar/equipment catalogs, outfits, friends, chat and WebSocket notifications.
 - Experimental clubs, events, reports and other protocol endpoints; some remain stubs.
+- Database readiness monitoring at `/readyz`, with HTTP 503 when the database is unavailable.
 
 These endpoints do not guarantee every feature works in-game. This is not a hardened,
 production-ready public service. Use a small, controlled test deployment first.

@@ -1,0 +1,40 @@
+import pytest
+from sqlalchemy.exc import OperationalError
+
+from rrserver import create_app
+from rrserver.extensions import db
+
+
+@pytest.fixture()
+def readiness_app(tmp_path):
+    return create_app({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": f"sqlite:///{tmp_path / 'readiness.sqlite3'}",
+        "JWT_SECRET": "test-secret-longer-than-thirty-two-bytes",
+        "TRUSTED_HOSTS": None,
+    })
+
+
+def test_ready_with_database(readiness_app):
+    response = readiness_app.test_client().get("/readyz")
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ready", "checks": {"database": "ok"}}
+    assert response.headers["Cache-Control"] == "no-store, max-age=0"
+
+
+def test_not_ready_hides_database_details_and_recovers(readiness_app, monkeypatch):
+    def unavailable():
+        raise OperationalError("SELECT 1", {}, RuntimeError("private-database-details"))
+
+    client = readiness_app.test_client()
+    with readiness_app.app_context(), monkeypatch.context() as patch:
+        patch.setattr(db.engine, "connect", unavailable)
+        response = client.get("/readyz")
+        assert response.status_code == 503
+        assert response.get_json() == {
+            "status": "not_ready", "checks": {"database": "unavailable"},
+        }
+        assert "private-database-details" not in response.get_data(as_text=True)
+        assert response.headers["Cache-Control"] == "no-store, max-age=0"
+        assert client.get("/healthz").status_code == 200
+    assert client.get("/readyz").status_code == 200

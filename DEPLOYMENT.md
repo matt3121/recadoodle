@@ -92,6 +92,15 @@ verification and must never be treated as proof of identity. No IDs are pre-link
 
 ## 5. Backups, updates and troubleshooting
 
+### Database readiness
+
+`GET /readyz` executes a lightweight database query and returns HTTP 200 with
+`{"status":"ready","checks":{"database":"ok"}}` when it succeeds. Database connection
+or query errors return HTTP 503 with `database: unavailable`, without exposing error details.
+Responses are not cached. Use this endpoint for database-readiness monitoring; `/healthz`
+remains the process-liveness check. Readiness does not test Photon, room assets, database
+writes or full gameplay compatibility.
+
 Back up the persistent volume and your private `.env` securely before updates. Stop the
 backend before taking a filesystem copy of SQLite, or use SQLite's backup API. Never
 commit backups. `docker compose down` preserves the volume; **do not use `down -v`** unless
