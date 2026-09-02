@@ -14,6 +14,7 @@ def register_readiness_routes(app: Flask) -> None:
         except SQLAlchemyError:
             response = jsonify(status="not_ready", checks={"database": "unavailable"})
             response.status_code = 503
+            response.headers["Retry-After"] = "30"
         else:
             response = jsonify(status="ready", checks={"database": "ok"})
         response.headers["Cache-Control"] = "no-store, max-age=0"

@@ -18,6 +18,7 @@ def readiness_app(tmp_path):
 def test_ready_with_database(readiness_app):
     response = readiness_app.test_client().get("/readyz")
     assert response.status_code == 200
+    assert "Retry-After" not in response.headers
     assert response.get_json() == {"status": "ready", "checks": {"database": "ok"}}
     assert response.headers["Cache-Control"] == "no-store, max-age=0"
 
@@ -31,6 +32,7 @@ def test_not_ready_hides_database_details_and_recovers(readiness_app, monkeypatc
         patch.setattr(db.engine, "connect", unavailable)
         response = client.get("/readyz")
         assert response.status_code == 503
+        assert response.headers["Retry-After"] == "30"
         assert response.get_json() == {
             "status": "not_ready", "checks": {"database": "unavailable"},
         }
