@@ -22,7 +22,7 @@ INSECURE_SECRET_VALUES = {
 }
 
 
-def create_app(test_config: dict | None = None) -> Flask:
+def create_app(test_config: dict | None = None, *, initialize_database: bool = True) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
     if test_config:
@@ -73,10 +73,11 @@ def create_app(test_config: dict | None = None) -> Flask:
     def not_found(_error):
         return jsonify(error="not_found", path=request.path), 404
 
-    with app.app_context():
-        db.create_all()
-        from .seed import seed_database
+    if initialize_database:
+        with app.app_context():
+            db.create_all()
+            from .seed import seed_database
 
-        seed_database()
+            seed_database()
 
     return app

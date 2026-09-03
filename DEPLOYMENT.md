@@ -102,9 +102,21 @@ remains the process-liveness check. Readiness does not test Photon, room assets,
 writes or full gameplay compatibility.
 
 Back up the persistent volume and your private `.env` securely before updates. Stop the
-backend before taking a filesystem copy of SQLite, or use SQLite's backup API. Never
-commit backups. `docker compose down` preserves the volume; **do not use `down -v`** unless
-you intend to erase all accounts, uploads and saves.
+backend before taking a raw filesystem copy of SQLite. Alternatively, create a consistent
+online backup while the server is running with the built-in SQLite backup command:
+
+```console
+docker compose exec backend python manage.py backup-database
+docker compose exec backend ls -lh /app/instance/backups
+docker compose cp backend:/app/instance/backups/recadoodle-YYYYMMDD-HHMMSS.sqlite3 .
+```
+
+The command uses SQLite's online backup API, verifies the new file with `quick_check`, and
+refuses to overwrite an existing file. Backups default to `/app/instance/backups` in the
+persistent volume. Use `--output /app/instance/backups/NAME.sqlite3` to choose a name.
+Copy completed backups off the server and protect them like the live database: they contain
+accounts and authentication data. Never commit backups. `docker compose down` preserves the
+volume; **do not use `down -v`** unless you intend to erase all accounts, uploads and saves.
 
 After pulling reviewed updates: `docker compose --profile tunnel up -d --build`.
 For a restart: `docker compose restart backend`.

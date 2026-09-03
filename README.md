@@ -37,6 +37,12 @@ The password is entered privately at the prompt. Coach occupies ID 1; the first 
 on an empty database normally receives ID 2. No SQLite account or cloud database signup
 is required. SQLite stores local data under `instance/`.
 
+Create a verified online backup at any time with:
+
+```powershell
+.\.venv\Scripts\python.exe manage.py backup-database
+```
+
 Visit `http://localhost:5000/healthz` to check the API. `serve.py` is a local development
 server, not the recommended public deployment. See [DEPLOYMENT.md](DEPLOYMENT.md) for
 Docker, Cloudflare Tunnel, Photon settings, client setup and troubleshooting.
