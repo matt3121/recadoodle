@@ -15,6 +15,7 @@ recadoodle discord - https://discord.gg/guazzTRvnk
 - Password accounts, developer roles, token authentication and a password-required account picker.
 - Personal dorms, room discovery, room saves, circuit values and room thumbnails.
 - Avatar/equipment catalogs, outfits, friends, chat and WebSocket notifications.
+- Persistent game-completion token rewards and atomic token-store purchases.
 - Experimental clubs, events, reports and other protocol endpoints; some remain stubs.
 - Database readiness monitoring at `/readyz`, with HTTP 503 when the database is unavailable.
 
@@ -63,6 +64,10 @@ Client debug HTTP logging can expose passwords and tokens: leave it off.
 
 WebSocket connection state and rate limits are process-local, so the supplied deployment
 uses one worker. Do not increase replicas/workers without shared state support.
+
+Game rewards grant `GAME_REWARD_TOKENS` once per game-session identifier and stop at
+`DAILY_GAME_REWARD_LIMIT` per account each UTC day. Store purchases use archived prices,
+reject stale client prices, and never allow a token balance to become negative.
 
 ## Attribution
 

@@ -39,6 +39,20 @@ STOREFRONT_FILES = {
 }
 
 
+def _store_items_by_id() -> dict[int, dict]:
+    items: dict[int, dict] = {}
+    for path in STOREFRONT_FILES.values():
+        storefront = json.loads(path.read_text(encoding="utf-8-sig"))
+        for item in storefront.get("StoreItems", []):
+            item_id = item.get("PurchasableItemId")
+            if isinstance(item_id, int):
+                items.setdefault(item_id, item)
+    return items
+
+
+STORE_ITEMS_BY_ID = _store_items_by_id()
+
+
 def _with_storefront_avatar_items(items: list[dict]) -> list[dict]:
     result = list(items)
     known = {str(item.get("AvatarItemDesc", "")) for item in result}

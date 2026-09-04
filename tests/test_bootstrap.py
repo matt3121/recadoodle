@@ -755,6 +755,73 @@ def test_progression_media_leaderboard_and_compatibility_batch(client):
     assert client.get("/parentalcontrol/me").status_code == 200
 
 
+def test_game_rewards_and_token_store_purchases_are_persistent(client):
+    tokens = create_player(client)
+    headers = bearer(tokens["access_token"])
+
+    first_reward = client.post(
+        "/api/gamerewards/v1/request",
+        headers=headers,
+        json={"GameSessionId": "completed-session-1"},
+    ).get_json()
+    assert first_reward == {
+        "Balance": 10100,
+        "Rewards": [{"Amount": 100, "CurrencyType": 2}],
+        "Success": True,
+    }
+    repeated_reward = client.post(
+        "/api/gamerewards/v1/request",
+        headers=headers,
+        json={"GameSessionId": "completed-session-1"},
+    ).get_json()
+    assert repeated_reward["Rewards"] == []
+    assert repeated_reward["Balance"] == 10100
+
+    purchase = client.post(
+        "/api/storefronts/v3/purchase",
+        headers=headers,
+        json={"PurchasableItemId": 7, "ExpectedPrice": 3000},
+    )
+    assert purchase.status_code == 200
+    receipt = purchase.get_json()
+    assert receipt["Success"] is True
+    assert receipt["Balance"] == 7100
+    assert receipt["GiftDrop"]["FriendlyName"] == "Archer Quiver (Grey)"
+    assert receipt["TransactionId"] == receipt["transactionId"]
+    assert client.get("/api/storefronts/v4/balance/2", headers=headers).get_json() == {
+        "Balance": 7100,
+        "CurrencyType": 2,
+    }
+
+    duplicate = client.post(
+        "/api/storefronts/v1/purchase",
+        headers=headers,
+        json={"PurchasableItemId": 7, "ExpectedPrice": 3000},
+    )
+    assert duplicate.status_code == 409
+    assert duplicate.get_json()["Error"] == "You already own this item."
+
+
+def test_game_rewards_respect_the_daily_limit(client):
+    tokens = create_player(client)
+    headers = bearer(tokens["access_token"])
+    for session_number in range(10):
+        response = client.post(
+            "/api/gamerewards/v1/request",
+            headers=headers,
+            json={"GameSessionId": f"daily-session-{session_number}"},
+        ).get_json()
+        assert response["Rewards"] == [{"Amount": 100, "CurrencyType": 2}]
+
+    capped = client.post(
+        "/api/gamerewards/v1/request",
+        headers=headers,
+        json={"GameSessionId": "daily-session-capped"},
+    ).get_json()
+    assert capped["Rewards"] == []
+    assert capped["Balance"] == 11000
+
+
 def test_room_blob_storage_round_trip_and_subroom_history(client):
     tokens = create_player(client)
     headers = bearer(tokens["access_token"])

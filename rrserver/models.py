@@ -41,6 +41,31 @@ class RefreshToken(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
 
 
+class TokenTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False, index=True)
+    amount = db.Column(db.Integer, nullable=False)
+    kind = db.Column(db.String(32), nullable=False, index=True)
+    reference = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+    __table_args__ = (db.UniqueConstraint("account_id", "kind", "reference"),)
+
+
+class StorePurchase(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False, index=True)
+    purchasable_item_id = db.Column(db.Integer, nullable=False, index=True)
+    price = db.Column(db.Integer, nullable=False)
+    gift_drop_json = db.Column(db.Text, nullable=False, default="{}")
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+class OwnedStoreItem(db.Model):
+    account_id = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
+    purchasable_item_id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime(timezone=True), nullable=False, default=utcnow)
+
+
 class PlayerSetting(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
     key = db.Column(db.String(128), primary_key=True)

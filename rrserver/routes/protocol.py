@@ -18,6 +18,7 @@ from flask import (
     send_file,
 )
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 from ..auth import (
     GAME_VERSION,
@@ -42,6 +43,7 @@ from ..catalog import (
     PURCHASABLE_CATALOG,
     ROOM_IMAGE_DIR,
     SERVICE_SUBDOMAINS,
+    STORE_ITEMS_BY_ID,
     STOREFRONT_FILES,
     VOTE_TO_KICK_REASONS,
 )
@@ -60,6 +62,7 @@ from ..models import (
     EquipmentPreference,
     HomeClub,
     LeaderboardScore,
+    OwnedStoreItem,
     PlayerEvent,
     PlayerEventResponse,
     PlayerImage,
@@ -80,8 +83,10 @@ from ..models import (
     RoomSave,
     RoomSetting,
     SavedOutfit,
+    StorePurchase,
     SubRoom,
     SubRoomPermission,
+    TokenTransaction,
 )
 
 
@@ -2931,7 +2936,63 @@ def register_protocol_routes(app: Flask) -> None:
 
     @app.post("/api/gamerewards/v1/request")
     def request_game_rewards():
-        return jsonify(Rewards=[], Success=True)
+        account = current_account()
+        body = request.form if request.form else (request.get_json(silent=True) or {})
+        session_id = str(
+            body.get(
+                "GameSessionId",
+                body.get("gameSessionId", body.get("RoomInstanceId", body.get("roomInstanceId", ""))),
+            )
+        ).strip()
+        if account is None or not session_id:
+            return jsonify(Rewards=[], Success=True)
+        if len(session_id) > 128:
+            return jsonify(Rewards=[], Success=False, Error="Invalid game session."), 400
+
+        previous = db.session.scalar(
+            db.select(TokenTransaction).where(
+                TokenTransaction.account_id == account.id,
+                TokenTransaction.kind == "game_reward",
+                TokenTransaction.reference == session_id,
+            )
+        )
+        if previous is not None:
+            return jsonify(Rewards=[], Success=True, Balance=account.token_balance)
+
+        day_start = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+        earned_today = db.session.scalar(
+            db.select(func.coalesce(func.sum(TokenTransaction.amount), 0)).where(
+                TokenTransaction.account_id == account.id,
+                TokenTransaction.kind == "game_reward",
+                TokenTransaction.created_at >= day_start,
+            )
+        )
+        reward = max(0, int(current_app.config["GAME_REWARD_TOKENS"]))
+        daily_limit = max(0, int(current_app.config["DAILY_GAME_REWARD_LIMIT"]))
+        reward = min(reward, max(0, daily_limit - int(earned_today or 0)))
+        if reward == 0:
+            return jsonify(Rewards=[], Success=True, Balance=account.token_balance)
+
+        account.token_balance += reward
+        db.session.add(
+            TokenTransaction(
+                account_id=account.id,
+                amount=reward,
+                kind="game_reward",
+                reference=session_id,
+            )
+        )
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            refreshed = db.session.get(Account, account.id)
+            return jsonify(Rewards=[], Success=True, Balance=refreshed.token_balance)
+        return jsonify(
+            Rewards=[{"CurrencyType": 2, "Amount": reward}],
+            Success=True,
+            Balance=account.token_balance,
+        )
 
     def leaderboard_body() -> dict:
         return request.form.to_dict() if request.form else (request.get_json(silent=True) or {})
@@ -3040,6 +3101,117 @@ def register_protocol_routes(app: Flask) -> None:
                 return "", 404
             return jsonify(StorefrontType=int(storefront_id), StoreItems=[])
         return send_file(storefront, mimetype="application/json")
+
+    @app.post("/api/storefronts/v1/purchase")
+    @app.post("/api/storefronts/v2/purchase")
+    @app.post("/api/storefronts/v3/purchase")
+    @require_account
+    def purchase_store_item(account: Account):
+        body = request.form if request.form else (request.get_json(silent=True) or {})
+        try:
+            item_id = int(
+                body.get(
+                    "PurchasableItemId",
+                    body.get("purchasableItemId", body.get("ItemId", body.get("itemId"))),
+                )
+            )
+        except (TypeError, ValueError):
+            return jsonify(Success=False, Error="PurchasableItemId is required."), 400
+
+        item = STORE_ITEMS_BY_ID.get(item_id)
+        price_entry = next(
+            (
+                entry
+                for entry in (item or {}).get("Prices", [])
+                if entry.get("CurrencyType") == 2
+            ),
+            None,
+        )
+        if item is None or price_entry is None:
+            return jsonify(Success=False, Error="This item is not available for tokens."), 404
+        price = int(price_entry.get("Price", 0))
+        if price <= 0:
+            return jsonify(Success=False, Error="This item has an invalid price."), 400
+
+        expected_price = body.get("ExpectedPrice", body.get("expectedPrice"))
+        if expected_price is not None:
+            try:
+                if int(expected_price) != price:
+                    return jsonify(Success=False, Error="The item price has changed."), 409
+            except (TypeError, ValueError):
+                return jsonify(Success=False, Error="ExpectedPrice must be a number."), 400
+
+        gift = copy.deepcopy(item.get("GiftDrop") or {})
+        unique = bool(
+            gift.get("Unique")
+            or gift.get("AvatarItemDesc")
+            or gift.get("EquipmentModificationGuid")
+        )
+        if unique and db.session.get(OwnedStoreItem, (account.id, item_id)) is not None:
+            return jsonify(Success=False, Error="You already own this item."), 409
+
+        debit = db.session.execute(
+            db.update(Account)
+            .where(Account.id == account.id, Account.token_balance >= price)
+            .values(token_balance=Account.token_balance - price)
+        )
+        if debit.rowcount != 1:
+            db.session.rollback()
+            return jsonify(Success=False, Error="Not enough tokens."), 400
+
+        transaction_id = str(uuid.uuid4())
+        purchase = StorePurchase(
+            account_id=account.id,
+            purchasable_item_id=item_id,
+            price=price,
+            gift_drop_json=json.dumps(gift, separators=(",", ":")),
+        )
+        db.session.add(purchase)
+        db.session.add(
+            TokenTransaction(
+                account_id=account.id,
+                amount=-price,
+                kind="store_purchase",
+                reference=transaction_id,
+            )
+        )
+        if unique:
+            db.session.add(OwnedStoreItem(account_id=account.id, purchasable_item_id=item_id))
+
+        consumable = str(gift.get("ConsumableItemDesc") or "")
+        if consumable:
+            balance_row = db.session.get(ConsumableBalance, (account.id, consumable))
+            if balance_row is None:
+                default_item = next(
+                    (
+                        value
+                        for value in ALL_UNLOCKS["consumables"]
+                        if value.get("ConsumableItemDesc") == consumable
+                    ),
+                    None,
+                )
+                balance_row = ConsumableBalance(
+                    account_id=account.id,
+                    consumable=consumable,
+                    quantity=int((default_item or {}).get("Count", 0)),
+                )
+                db.session.add(balance_row)
+            balance_row.quantity += 1
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify(Success=False, Error="The purchase could not be completed."), 409
+        db.session.refresh(account)
+        return jsonify(
+            Success=True,
+            Error="",
+            TransactionId=transaction_id,
+            transactionId=transaction_id,
+            Balance=account.token_balance,
+            GiftDrop=gift,
+        )
 
     @app.get("/api/catalog/v1/all")
     def purchasable_catalog():
