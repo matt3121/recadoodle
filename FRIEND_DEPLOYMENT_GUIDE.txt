@@ -2,7 +2,7 @@ RECADOODLE SERVER - DETAILED DEPLOYMENT GUIDE FOR A FRIEND
 ===========================================================
 
 Repository:
-https://github.com/matt3121/recadoodle2023
+https://github.com/matt3121/recadoodle
 
 Last checked against the public main branch: 4 September 2026
 
@@ -102,7 +102,7 @@ PART 2 - DOWNLOAD THE SERVER
 
 Choose a private working directory that is not synced into a public Git repository. Then:
 
-    git clone https://github.com/matt3121/recadoodle2023.git
+    git clone https://github.com/matt3121/recadoodle.git
     cd recadoodle2023
 
 Confirm that these files exist in the current directory:
