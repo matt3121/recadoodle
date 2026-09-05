@@ -19,6 +19,7 @@ def secure_app(tmp_path):
             "RECNET_DOMAIN": "play.example.test",
             "CORS_ALLOWED_ORIGINS": ("https://admin.example.test",),
             "ALLOW_PASSWORDLESS_ACCOUNTS": False,
+            "CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN": False,
             "RATE_LIMIT_ENABLED": True,
         }
     )

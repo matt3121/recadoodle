@@ -62,6 +62,11 @@ No default developer credentials are provided. Keep passwordless login disabled.
 The cached-platform association only selects an account; it does not authenticate it.
 Client debug HTTP logging can expose passwords and tokens: leave it off.
 
+For an isolated local test server only, setting both
+`ALLOW_PASSWORDLESS_ACCOUNTS=true` and `CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN=true`
+makes the in-game Create Account flow create developer/moderator accounts. Never enable
+these options on a public deployment: anyone who can reach it could gain developer access.
+
 WebSocket connection state and rate limits are process-local, so the supplied deployment
 uses one worker. Do not increase replicas/workers without shared state support.
 

@@ -19,6 +19,7 @@ TRUST_CLOUDFLARE_PROXY=true
 TRUSTED_HOSTS=play.YOUR_DOMAIN,localhost,127.0.0.1
 CLOUDFLARE_TUNNEL_TOKEN=PUT_YOUR_TUNNEL_TOKEN_HERE
 ALLOW_PASSWORDLESS_ACCOUNTS=false
+CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN=false
 ```
 
 Replace every placeholder. `RECNET_DOMAIN` is a hostname without `https://` or a path.
@@ -26,6 +27,8 @@ Generate a secret locally with `python -c "import secrets; print(secrets.token_u
 Do not post the result or reuse a sample password. Changing JWT_SECRET invalidates sessions.
 Create your own Photon Realtime and Voice apps; use matching IDs in the client patch.
 Photon traffic is separate from the HTTP tunnel. A tunnel does not provide Photon hosting.
+Keep `CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN=false` on an Internet-accessible server. Enabling it
+allows any new in-game account to receive developer and moderator privileges.
 
 ## 2. Start the backend and create your account
 

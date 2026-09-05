@@ -66,6 +66,7 @@ def register_authentication_routes(app: Flask) -> None:
 
         if grant == "create_account":
             password = str(body.get("password", ""))
+            create_as_developer = current_app.config["CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN"]
             problem = password_problem(
                 password, allow_empty=current_app.config["ALLOW_PASSWORDLESS_ACCOUNTS"]
             )
@@ -76,6 +77,8 @@ def register_authentication_routes(app: Flask) -> None:
                 username=f"Player{secrets.randbelow(90_000_000) + 10_000_000}",
                 display_name="New Player",
                 password_hash=generate_password_hash(password) if password else "",
+                is_developer=create_as_developer,
+                is_moderator=create_as_developer,
                 token_balance=current_app.config["STARTING_TOKENS"],
             )
             db.session.add(account)

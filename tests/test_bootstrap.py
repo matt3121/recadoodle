@@ -5,6 +5,8 @@ import jwt
 import pytest
 
 from rrserver import create_app
+from rrserver.extensions import db
+from rrserver.models import Account
 from rrserver.notifications import notification_frame
 
 
@@ -18,6 +20,7 @@ def app(tmp_path):
             "RECNET_DOMAIN": "play.example.test",
             "SINGLE_HOST_MODE": False,
             "ALLOW_PASSWORDLESS_ACCOUNTS": True,
+            "CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN": False,
             "RATE_LIMIT_ENABLED": False,
         }
     )
@@ -444,10 +447,27 @@ def test_create_account_token_and_profile(client):
     )
     assert payload["rn.ver"] == "20230414"
     assert "gameClient" in payload["role"]
+    assert "developer" not in payload["role"]
 
     me = client.get("/account/me", headers=bearer(tokens["access_token"]))
     assert me.status_code == 200
     assert me.get_json()["username"].startswith("Player")
+
+
+def test_create_account_can_be_promoted_to_developer_on_login(client, app):
+    app.config["CREATE_DEVELOPER_ACCOUNTS_ON_LOGIN"] = True
+    tokens = create_player(client, password="")
+    payload = jwt.decode(
+        tokens["access_token"], "test-secret-longer-than-thirty-two-bytes", algorithms=["HS256"]
+    )
+    profile = client.get("/account/me", headers=bearer(tokens["access_token"])).get_json()
+
+    assert "developer" in payload["role"]
+    assert "moderator" in payload["role"]
+    with app.app_context():
+        account = db.session.get(Account, profile["accountId"])
+        assert account.is_developer is True
+        assert account.is_moderator is True
 
 
 def test_password_login_refresh_and_rotation(client):
