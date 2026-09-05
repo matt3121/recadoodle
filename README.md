@@ -7,7 +7,7 @@ Compatibility with other builds is not guaranteed.
 ## important read me : 
 just before you begin the deployment process please keep in mind this server is not meant to be used for communities as it lacks security and is intended for experimentation.
 
-[Join the Recadoodle Discord](https://discord.gg/guazzTRvnk) for news, updates, and help.
+[Join the Recadoodle Discord](https://discord.gg/HjcpsaGnB6) for news, updates, and help.
 
 
 ## Features
