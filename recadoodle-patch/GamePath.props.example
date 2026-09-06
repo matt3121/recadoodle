@@ -1,0 +1,10 @@
+<Project>
+    <!-- Copy this file to "GamePath.props" (same folder) and set GamePath to your local
+         Rec Room install. GamePath.props is gitignored, so your local path stays out of the repo.
+
+         The install must have been launched once under BepInEx 6 (IL2CPP) so that
+         BepInEx/interop/ is populated with the proxy assemblies this project references. -->
+    <PropertyGroup>
+        <GamePath>C:\Path\To\RecRoom</GamePath>
+    </PropertyGroup>
+</Project>

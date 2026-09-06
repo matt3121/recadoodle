@@ -1,0 +1,44 @@
+## Settings file generated for the local 20230414 Flask server.
+## Copy to BepInEx/config/recadoodle.patch.cfg after supplying your own Photon IDs.
+
+[Server]
+
+RecNet NameServer Host = http://127.0.0.1:5000
+
+[Photon]
+
+App Id Realtime = REPLACE_WITH_YOUR_REALTIME_APP_ID
+App Id Voice = REPLACE_WITH_YOUR_VOICE_APP_ID
+App Id Chat = REPLACE_WITH_YOUR_CHAT_APP_ID
+
+[Signing]
+
+Disable Signature Verification = true
+
+[Analytics]
+
+Disable Telemetry = true
+
+[Interface]
+
+Enable New Watch Menu = true
+Enable Dark UI = true
+
+[Advanced]
+
+Enabled Advanced Settings = false
+Photon NameServer =
+Photon NameServer Port = 0
+Debug = false
+Suppress DUID Mismatch = true
+Simulate DUID Mismatch = false
+Corrupt Stored DUID = false
+Restore Stored DUID = false
+DeviceId Response Override =
+DeviceId Response Status = 200
+[Permissions]
+
+## Treat gameplay roles as Maker Pen-enabled, including quest roles.
+# Setting type: Boolean
+# Default value: true
+Allow Maker Pen In Quests = true
