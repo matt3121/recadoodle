@@ -23,6 +23,14 @@ def test_ready_with_database(readiness_app):
     assert response.headers["Cache-Control"] == "no-store, max-age=0"
 
 
+def test_health_identifies_recadoodle(readiness_app):
+    response = readiness_app.test_client().get("/healthz")
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "name": "Recadoodle", "status": "ok", "gameVersion": "20230414",
+    }
+
+
 def test_not_ready_hides_database_details_and_recovers(readiness_app, monkeypatch):
     def unavailable():
         raise OperationalError("SELECT 1", {}, RuntimeError("private-database-details"))

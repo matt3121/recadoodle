@@ -397,7 +397,7 @@ def register_protocol_routes(app: Flask) -> None:
 
     @app.get("/healthz")
     def health():
-        return jsonify(status="ok", gameVersion=GAME_VERSION)
+        return jsonify(name="Recadoodle", status="ok", gameVersion=GAME_VERSION)
 
     @app.get("/privileges/me/restrictions")
     @require_account
