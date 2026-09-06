@@ -15,6 +15,7 @@ just before you begin the deployment process please keep in mind this server is 
 - Password accounts, developer roles, token authentication and a password-required account picker.
 - Personal dorms, room discovery, room saves, circuit values and room thumbnails.
 - Avatar/equipment catalogs, outfits, friends, chat and WebSocket notifications.
+- Authenticated JPEG, PNG, and WebP profile-photo uploads with stable public account URLs.
 - Persistent game-completion token rewards and atomic token-store purchases.
 - Experimental clubs, events, reports and other protocol endpoints; some remain stubs.
 - Database readiness monitoring at `/readyz`, with HTTP 503 when the database is unavailable.
@@ -23,6 +24,10 @@ just before you begin the deployment process please keep in mind this server is 
 The server-info endpoint works without login or a database connection. Uptime is measured
 from application startup and resets on restart. The version is `unknown` if the package
 has not been installed. Use `/readyz` to check database readiness.
+
+Upload a profile photo as multipart form data to `/account/me/profilephoto`. The response
+includes its public `/account/{accountId}/profilephoto` URL. Photos default to a 5 MB limit,
+configurable with `PROFILE_PHOTO_MAX_BYTES`.
 
 These endpoints do not guarantee every feature works in-game. This is not a hardened,
 production-ready public service. Use a small, controlled test deployment first.

@@ -61,7 +61,7 @@ def register_security(app: Flask) -> None:
             rule = ("token", 30, 60)
         elif request.path == "/admin/login" and request.method == "POST":
             rule = ("admin-login", 10, 300)
-        elif request.path == "/upload" and request.method == "POST":
+        elif request.path in {"/upload", "/account/me/profilephoto"} and request.method == "POST":
             rule = ("upload", 20, 60)
         if rule is None:
             return None

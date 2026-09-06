@@ -775,6 +775,41 @@ def test_progression_media_leaderboard_and_compatibility_batch(client):
     assert client.get("/parentalcontrol/me").status_code == 200
 
 
+def test_profile_photo_upload_and_public_download(client):
+    tokens = create_player(client)
+    headers = bearer(tokens["access_token"])
+    account_id = client.get("/account/me", headers=headers).get_json()["accountId"]
+    photo = b"\x89PNG\r\n\x1a\n" + b"recadoodle-photo"
+    uploaded = client.post(
+        "/account/me/profilephoto",
+        headers=headers,
+        data={"photo": (io.BytesIO(photo), "avatar.png")},
+        content_type="multipart/form-data",
+    )
+    assert uploaded.status_code == 200
+    assert uploaded.get_json()["url"] == f"/account/{account_id}/profilephoto"
+    assert uploaded.get_json()["contentType"] == "image/png"
+    assert client.get("/account/me", headers=headers).get_json()["profileImage"].endswith(".png")
+    downloaded = client.get(f"/account/{account_id}/profilephoto")
+    assert downloaded.status_code == 200
+    assert downloaded.mimetype == "image/png"
+    assert downloaded.data == photo
+    assert downloaded.headers["Cache-Control"] == "public, max-age=300"
+
+
+def test_profile_photo_upload_rejects_invalid_files(client):
+    tokens = create_player(client)
+    response = client.post(
+        "/account/me/profilephoto",
+        headers=bearer(tokens["access_token"]),
+        data={"photo": (io.BytesIO(b"not-an-image"), "avatar.txt")},
+        content_type="multipart/form-data",
+    )
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "photo must be JPEG, PNG, or WebP"
+    assert client.post("/account/me/profilephoto").status_code == 401
+
+
 def test_game_rewards_and_token_store_purchases_are_persistent(client):
     tokens = create_player(client)
     headers = bearer(tokens["access_token"])

@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-import base64
 import copy
-import hashlib
 import json
 import math
 import secrets
 import uuid
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 
 from flask import (
     Flask,
@@ -41,7 +38,6 @@ from ..catalog import (
     MY_PROGRESS,
     PUBLISHED_CONFIGS,
     PURCHASABLE_CATALOG,
-    ROOM_IMAGE_DIR,
     SERVICE_SUBDOMAINS,
     STORE_ITEMS_BY_ID,
     STOREFRONT_FILES,
@@ -398,68 +394,6 @@ def register_protocol_routes(app: Flask) -> None:
 
 
 
-
-    def upload_root() -> Path:
-        path = Path(current_app.instance_path) / "uploads"
-        path.mkdir(parents=True, exist_ok=True)
-        return path
-
-    def safe_blob_path(category: str, blob_name: str) -> Path | None:
-        relative = Path(blob_name.replace("\\", "/"))
-        if relative.is_absolute() or ".." in relative.parts:
-            return None
-        root = (upload_root() / category).resolve()
-        candidate = (root / relative).resolve()
-        return candidate if candidate == root or root in candidate.parents else None
-
-    @app.post("/upload")
-    @require_account
-    def upload_blob(_account: Account):
-        file_type = request.form.get("FileType", request.form.get("fileType", "0"))
-        categories = {"1": "room", "2": "data", "3": "image", "4": "video", "5": "invention", "6": "roommetadata"}
-        uploaded = next(iter(request.files.values()), None)
-        if uploaded is None:
-            explicit = request.form.get("imageName") or request.form.get("filename") or request.form.get("name")
-            return (jsonify(filename=explicit), 200) if explicit else (jsonify(error="missing filename or valid upload data"), 400)
-        category = categories.get(str(file_type))
-        if category is None:
-            return jsonify(error="missing or unknown FileType"), 400
-        suffix = ".inv" if str(file_type) == "5" else ""
-        blob_name = f"{datetime.now(UTC).date().isoformat()}/{uuid.uuid4()}{suffix}"
-        destination = safe_blob_path(category, blob_name)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        uploaded.save(destination)
-        return jsonify(filename=blob_name)
-
-    @app.get("/<category>/<path:blob_name>")
-    def download_blob(category: str, blob_name: str):
-        if category not in {"room", "data", "image", "video", "invention", "roommetadata"}:
-            return "", 404
-        candidate = safe_blob_path(category, blob_name)
-        if candidate is None or not candidate.is_file():
-            return "", 404
-        response = send_file(candidate, mimetype="application/octet-stream", conditional=True)
-        response.headers["X-Content-SHA256"] = hashlib.sha256(candidate.read_bytes()).hexdigest()
-        return response
-
-
-
-
-    @app.get("/<image_name>.jpg")
-    def room_image(image_name: str):
-        """Serve the canonical built-in room thumbnails from the Images host."""
-
-        candidate = ROOM_IMAGE_DIR / f"{image_name}.jpg"
-        if not candidate.is_file():
-            candidate = ROOM_IMAGE_DIR / "DefaultProfileImage.jpg"
-        response = send_file(candidate, mimetype="image/jpeg", conditional=True)
-        response.headers["Cache-Control"] = "public, max-age=2592000, immutable"
-        if request.args.get("sig") == "p1":
-            placeholder = base64.b64encode(bytes(256)).decode("ascii")
-            response.headers["Content-Signature"] = (
-                f"key-id=KEY:RSA:p1.rec.net; data={placeholder}"
-            )
-        return response
 
     @app.get("/healthz")
     def health():
