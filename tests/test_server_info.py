@@ -6,6 +6,7 @@ def test_server_info_without_database(monkeypatch):
     clock = [100.0]
     monkeypatch.setattr(server_info, "monotonic", lambda: clock[0])
     monkeypatch.setattr(server_info, "version", lambda name: "1.2.3")
+    monkeypatch.setattr(server_info, "_utc_now", lambda: "2026-09-06T12:34:56Z")
     app = create_app({
         "TESTING": True,
         "JWT_SECRET": "test-secret-longer-than-thirty-two-bytes",
@@ -18,7 +19,8 @@ def test_server_info_without_database(monkeypatch):
     assert response.status_code == 200
     assert response.get_json() == {
         "name": "Recadoodle", "version": "1.2.3",
-        "gameVersion": "20230414", "uptimeSeconds": 65,
+        "gameVersion": "20230414", "serverTimeUtc": "2026-09-06T12:34:56Z",
+        "uptimeSeconds": 65,
     }
     assert response.headers["Cache-Control"] == "no-store, max-age=0"
     clock[0] = 170.0

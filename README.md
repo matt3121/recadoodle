@@ -18,7 +18,7 @@ just before you begin the deployment process please keep in mind this server is 
 - Persistent game-completion token rewards and atomic token-store purchases.
 - Experimental clubs, events, reports and other protocol endpoints; some remain stubs.
 - Database readiness monitoring at `/readyz`, with HTTP 503 when the database is unavailable.
-- Server details at `/api/server-info`: package version, supported client build, and uptime in seconds.
+- Server details at `/api/server-info`: package version, supported client build, UTC time, and uptime.
 
 The server-info endpoint works without login or a database connection. Uptime is measured
 from application startup and resets on restart. The version is `unknown` if the package
