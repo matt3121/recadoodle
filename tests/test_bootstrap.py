@@ -47,7 +47,9 @@ def bearer(token):
 def test_full_orientation_is_enabled(client):
     config = {entry["Key"]: entry["Value"] for entry in client.get("/api/gameconfigs/v1/all").get_json()}
     assert config["Growth.QuickOrientationEnabled"] == "false"
+    assert config["Growth.ForceQuickOrientationCreationCutoff"] == "1970-01-01 00:00"
     assert config["Lifecycle.NoOrientation.Platforms"] == ""
+    assert config["Lifecycle.NoOrientation.DestinationRoomId"] == "13"
 
 
 def test_live_notification_frame_matches_signalr_shape():
