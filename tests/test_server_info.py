@@ -40,3 +40,17 @@ def test_server_info_without_installed_package(monkeypatch):
         "TRUSTED_HOSTS": None,
     }, initialize_database=False)
     assert app.test_client().get("/api/server-info").get_json()["version"] == "unknown"
+
+
+def test_status_page_has_api_label(monkeypatch):
+    monkeypatch.setattr(server_info, "version", lambda name: "1.2.3")
+    app = create_app({
+        "TESTING": True,
+        "JWT_SECRET": "test-secret-longer-than-thirty-two-bytes",
+        "SQLALCHEMY_DATABASE_URI": "sqlite://",
+        "TRUSTED_HOSTS": None,
+    }, initialize_database=False)
+    response = app.test_client().get("/status")
+    assert response.status_code == 200
+    assert b"RecadoodleAPI" in response.data
+    assert b"Online" in response.data

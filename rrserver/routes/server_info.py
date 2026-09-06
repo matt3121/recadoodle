@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from time import monotonic
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 from ..auth import GAME_VERSION
 
@@ -29,3 +29,11 @@ def register_server_info_routes(app: Flask) -> None:
         )
         response.headers["Cache-Control"] = "no-store, max-age=0"
         return response
+
+    @app.get("/status")
+    def status_page():
+        return render_template(
+            "status.html",
+            game_version=GAME_VERSION,
+            server_version=server_version,
+        )

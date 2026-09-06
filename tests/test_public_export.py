@@ -10,8 +10,9 @@ def test_api_only_and_fresh_database(tmp_path):
                       'JWT_SECRET': 'test-secret-longer-than-thirty-two-bytes'})
     client = app.test_client()
     assert client.get('/', headers={'Accept': 'text/html'}).is_json
-    for route in ('/admin', '/admin/login', '/credits', '/status', '/discovery', '/static/site.css'):
+    for route in ('/admin', '/admin/login', '/credits', '/discovery', '/static/site.css'):
         assert client.get(route).status_code == 404
+    assert b'RecadoodleAPI' in client.get('/status').data
     assert client.get('/healthz').status_code == 200
     with app.app_context():
         assert db.session.scalar(db.select(db.func.count()).select_from(Account)) == 1

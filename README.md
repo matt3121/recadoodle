@@ -54,7 +54,8 @@ Create a verified online backup at any time with:
 .\.venv\Scripts\python.exe manage.py backup-database
 ```
 
-Visit `http://localhost:5000/healthz` to check the API. `serve.py` is a local development
+Visit `http://localhost:5000/healthz` to check the API, or `http://localhost:5000/status`
+for the browser status page. `serve.py` is a local development
 server, not the recommended public deployment. See [DEPLOYMENT.md](DEPLOYMENT.md) for
 Docker, Cloudflare Tunnel, Photon settings, client setup and troubleshooting.
 
