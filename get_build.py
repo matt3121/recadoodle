@@ -15,7 +15,7 @@ except ImportError:
 URL = "https://archive.recagain.site/download/2023-04-18T06-58-58Z"
 
 BASE_DIR = Path(__file__).resolve().parent
-DOWNLOAD_DIR = BASE_DIR / "DepotDownloader"
+DOWNLOAD_DIR = BASE_DIR / "Build"
 ARCHIVE_FILE = BASE_DIR / "RecRoom-2023-04-18.zip"
 
 
