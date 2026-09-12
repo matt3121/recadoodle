@@ -310,7 +310,11 @@ def instance_dto(
     dorm = _is_dorm(room)
     if dorm:
         private = True
-    instance_id = 1_000_000 + room.id if not private else secrets.randbelow(800_000_000) + 2_000_000
+    instance_id = (
+        10_000_000 + room.id
+        if not private
+        else secrets.randbelow(800_000_000) + 100_000_000
+    )
     if dorm:
         instance_id = 1_000_000 + account_id
     imported = BUILTIN_ROOMS_BY_ID.get(1 if dorm else room.id, {})

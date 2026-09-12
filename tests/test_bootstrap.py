@@ -173,6 +173,17 @@ def test_room_player_data_uses_empty_save_blob(client):
     assert client.get("/rooms/13/playerdata/me").get_json() == {"Data": ""}
 
 
+def test_public_room_instance_does_not_collide_with_personal_dorm(client):
+    tokens = create_player(client)
+    headers = bearer(tokens["access_token"])
+    dorm = client.post("/matchmake/dorm", headers=headers).get_json()["roomInstance"]
+    rec_center = client.post("/matchmake/room/2", headers=headers).get_json()["roomInstance"]
+
+    assert dorm["roomInstanceId"] != rec_center["roomInstanceId"]
+    assert dorm["photonRoomId"] != rec_center["photonRoomId"]
+    assert dorm["roomId"] != rec_center["roomId"]
+
+
 def test_room_and_post_login_empty_data_have_2023_wire_shapes(client):
     room = client.get("/rooms/13").get_json()
     assert room["FriendlyName"] == "Orientation"
