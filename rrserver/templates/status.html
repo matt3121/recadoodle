@@ -3,30 +3,122 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="rgb(15 17 23)">
   <title>RecadoodleAPI</title>
   <style>
-    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
-    body { margin: 0; background: #0f1117; color: #f5f7fa; }
-    header { padding: 14px 22px; border-bottom: 1px solid #2a2f3a; font-weight: 700; }
-    .label { color: #ff8a3d; letter-spacing: .04em; }
-    main { max-width: 680px; margin: 64px auto; padding: 0 22px; }
-    .card { padding: 24px; border: 1px solid #2a2f3a; border-radius: 14px; background: #171a22; }
-    .online { color: #65d88a; font-weight: 700; }
-    dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; margin-bottom: 0; }
-    dt { color: #aab1bf; }
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: rgb(15 17 23); color: rgb(245 247 250); }
+    header { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; padding: 16px max(22px, calc((100vw - 1080px) / 2)); border-bottom: 1px solid rgb(42 47 58); background: rgb(15 17 23 / 92%); backdrop-filter: blur(14px); }
+    .label { color: rgb(255 138 61); font-weight: 800; letter-spacing: .04em; }
+    .header-status { color: rgb(170 177 191); font-size: .9rem; }
+    main { width: min(1080px, calc(100% - 36px)); margin: 48px auto 72px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
+    h1 { margin: 0 0 8px; font-size: clamp(2rem, 6vw, 3.75rem); letter-spacing: -.04em; }
+    h2 { margin: 0 0 16px; font-size: 1.1rem; }
+    p { color: rgb(170 177 191); }
+    .online { color: rgb(101 216 138); font-weight: 750; }
+    .online::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 16px currentColor; }
+    .degraded { color: rgb(255 184 77); }
+    .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+    .card { padding: 20px; border: 1px solid rgb(42 47 58); border-radius: 16px; background: rgb(23 26 34); }
+    .metric span { display: block; color: rgb(170 177 191); font-size: .8rem; }
+    .metric strong { display: block; margin-top: 7px; font-size: 1.8rem; }
+    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+    .list { display: grid; gap: 10px; }
+    .item { padding: 14px; border: 1px solid rgb(48 53 65); border-radius: 12px; background: rgb(19 22 29); }
+    .item strong { display: block; overflow-wrap: anywhere; }
+    .item p { margin: 6px 0 0; font-size: .9rem; line-height: 1.4; }
+    .meta { margin-top: 8px; color: rgb(126 135 151); font-size: .78rem; }
+    .empty { padding: 28px 12px; text-align: center; color: rgb(126 135 151); }
+    footer { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 22px; color: rgb(126 135 151); font-size: .82rem; }
+    footer span { white-space: nowrap; }
+    @media (max-width: 820px) { .grid { grid-template-columns: repeat(2, 1fr); } .panels { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { main { margin-top: 30px; } .hero { align-items: flex-start; flex-direction: column; } .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
-  <header><span class="label">RecadoodleAPI</span></header>
+  <header><span class="label">RecadoodleAPI</span><span class="header-status" id="last-updated">Connecting...</span></header>
   <main>
-    <section class="card">
-      <h1>API status</h1>
-      <p class="online">Online</p>
-      <dl>
-        <dt>Server</dt><dd>{{ server_version }}</dd>
-        <dt>Game build</dt><dd>{{ game_version }}</dd>
-      </dl>
+    <section class="hero">
+      <div><h1>Server dashboard</h1><p>Live public activity for this Recadoodle server.</p></div>
+      <div class="online" id="service-status">Online</div>
     </section>
+    <section class="grid" aria-label="Server activity">
+      <article class="card metric"><span>Players</span><strong data-stat="players">...</strong></article>
+      <article class="card metric"><span>Online now</span><strong data-stat="onlineNow">...</strong></article>
+      <article class="card metric"><span>Rooms</span><strong data-stat="rooms">...</strong></article>
+      <article class="card metric"><span>Clubs</span><strong data-stat="clubs">...</strong></article>
+      <article class="card metric"><span>Upcoming events</span><strong data-stat="upcomingEvents">...</strong></article>
+    </section>
+    <section class="panels">
+      <article class="card"><h2>Recently created rooms</h2><div class="list" id="recent-rooms"><div class="empty">Loading rooms...</div></div></article>
+      <article class="card"><h2>Upcoming events</h2><div class="list" id="upcoming-events"><div class="empty">Loading events...</div></div></article>
+    </section>
+    <footer>
+      <span>Server {{ server_version }}</span><span>Game build {{ game_version }}</span>
+      <span id="uptime">Uptime ...</span><span>Refreshes every 30 seconds</span>
+    </footer>
   </main>
+  <script>
+    const text = (value) => document.createTextNode(value);
+    const empty = (message) => {
+      const element = document.createElement("div");
+      element.className = "empty";
+      element.append(text(message));
+      return element;
+    };
+    const item = (title, description, metadata) => {
+      const element = document.createElement("div");
+      element.className = "item";
+      const heading = document.createElement("strong");
+      heading.append(text(title));
+      element.append(heading);
+      if (description) {
+        const body = document.createElement("p");
+        body.append(text(description));
+        element.append(body);
+      }
+      const detail = document.createElement("div");
+      detail.className = "meta";
+      detail.append(text(metadata));
+      element.append(detail);
+      return element;
+    };
+    const duration = (seconds) => {
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      return [days ? `${days}d` : "", hours ? `${hours}h` : "", `${minutes}m`].filter(Boolean).join(" ");
+    };
+    const renderList = (target, values, render, message) => {
+      target.replaceChildren(...(values.length ? values.map(render) : [empty(message)]));
+    };
+    async function refresh() {
+      const status = document.getElementById("service-status");
+      try {
+        const response = await fetch("/api/server-stats", { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok || !data.stats) throw new Error("stats unavailable");
+        document.querySelectorAll("[data-stat]").forEach((element) => {
+          element.textContent = data.stats[element.dataset.stat].toLocaleString();
+        });
+        renderList(document.getElementById("recent-rooms"), data.stats.recentRooms, (room) =>
+          item(room.name, room.description, `Room ${room.id} · Up to ${room.maxPlayers} players`), "No rooms yet");
+        renderList(document.getElementById("upcoming-events"), data.stats.events, (event) =>
+          item(event.name, event.description, `${new Date(event.startAt).toLocaleString()} · ${event.capacity} spots`), "No upcoming events");
+        status.textContent = "Online";
+        status.className = "online";
+        document.getElementById("uptime").textContent = `Uptime ${duration(data.uptimeSeconds)}`;
+        document.getElementById("last-updated").textContent = `Updated ${new Date(data.generatedAt).toLocaleTimeString()}`;
+      } catch (error) {
+        status.textContent = "Stats unavailable";
+        status.className = "online degraded";
+        document.getElementById("last-updated").textContent = "Trying again soon";
+      }
+    }
+    refresh();
+    window.setInterval(refresh, 30000);
+  </script>
 </body>
 </html>

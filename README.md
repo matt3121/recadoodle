@@ -20,6 +20,9 @@ just before you begin the deployment process please keep in mind this server is 
 - Experimental clubs, events, reports and other protocol endpoints; some remain stubs.
 - Database readiness monitoring at `/readyz`, with HTTP 503 when the database is unavailable.
 - Server details at `/api/server-info`: package version, supported client build, UTC time, and uptime.
+- A live `/status` dashboard with player, room, club and event activity, recent rooms,
+  upcoming events and automatic refresh. The same public data is available as JSON at
+  `/api/server-stats`.
 
 The server-info endpoint works without login or a database connection. Uptime is measured
 from application startup and resets on restart. The version is `unknown` if the package
@@ -55,7 +58,7 @@ Create a verified online backup at any time with:
 ```
 
 Visit `http://localhost:5000/healthz` to check the API, or `http://localhost:5000/status`
-for the browser status page. `serve.py` is a local development
+for the live browser dashboard. `serve.py` is a local development
 server, not the recommended public deployment. See [DEPLOYMENT.md](DEPLOYMENT.md) for
 Docker, Cloudflare Tunnel, Photon settings, client setup and troubleshooting.
 

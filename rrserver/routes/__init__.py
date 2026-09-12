@@ -5,6 +5,7 @@ from __future__ import annotations
 from flask import Flask
 
 from .authentication import register_authentication_routes
+from .dashboard import register_dashboard_routes
 from .media import register_media_routes
 from .protocol import register_protocol_routes
 from .readiness import register_readiness_routes
@@ -19,3 +20,4 @@ def register_routes(app: Flask) -> None:
     register_protocol_routes(app)
     register_readiness_routes(app)
     register_server_info_routes(app)
+    register_dashboard_routes(app)
